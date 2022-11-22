@@ -12,17 +12,17 @@ df=df_spark.withColumn('New_unixtime',from_unixtime(col('Issue Date ')/1000))
 df.show(truncate=False)
 
 
-b :Convert timestamp to date type
+#b :Convert timestamp to date type
 df1=df.withColumn("datetype",to_date("New_unixtime"))
 df1.show(truncate=False)
 
 
-C : Remove the starting extra space in Brand column for LG and Voltas fields
+#C : Remove the starting extra space in Brand column for LG and Voltas fields
 from pyspark.sql.functions import trim
 df2=df1.withColumn('new_brand',trim(df1.Brand))
 df2.show(truncate=False)
 
-d:Replace empty string with None value
+#d:Replace empty string with None value
 from pyspark.sql.functions import col,when
 df3=df.withColumn("Country",when(col("Country")=='null',"").otherwise(col("Country")))
 df3.show(truncate=False)
@@ -31,7 +31,7 @@ df3.show(truncate=False)
 
 
 
-2 : Question
+#2 : Question
 
 from pyspark.sql import SparkSession
 
@@ -44,14 +44,14 @@ df.show()
 
 # a.Change the camel case columns to snake case
 
-# df1=df.withColumnRenamed('Source Id','Source_Id')\
-#       .withColumnRenamed('Transaction Number','Transaction_Number')\
-#       .withColumnRenamed('Mobile Number','Mobile_Number')\
-#       .withColumnRenamed('Start Time','Start_Time')\
-#       .withColumnRenamed('Product Number','Product_Number')
-#
-# df1.show()
-#
+df1=df.withColumnRenamed('Source Id','Source_Id')\
+      .withColumnRenamed('Transaction Number','Transaction_Number')\
+      .withColumnRenamed('Mobile Number','Mobile_Number')\
+      .withColumnRenamed('Start Time','Start_Time')\
+      .withColumnRenamed('Product Number','Product_Number')
+
+df1.show()
+
 #b.Add another column as start_time_ms and convert the values of StartTime to milliseconds.
 df2 = df1.withColumn("start_time_ms", unix_timestamp(df1.Start_Time))
 df2.show(truncate=False)
@@ -76,10 +76,7 @@ df1=df_spark.withColumnRenamed('Product number','Product_Number')
 df1.show()
 
 
-
-
-
-from pyspark.sql import SparkSession
+#from pyspark.sql import SparkSession
 
 from pyspark.sql.functions import *
 spark = SparkSession.builder.master('local[*]').appName('DataFrame').getOrCreate()
@@ -93,3 +90,7 @@ df2.show()
 df3 = df1.join(df2,df1.Product_Number==df2.Product_Number,"inner")
 df3.show()
 
+#print(df3.collect('Country')[0])
+
+# get the country as EN which is in country col - india
+print(df3.select(['Country']).collect()[0])
